@@ -234,6 +234,14 @@
     return ([self intForColumnIndex:columnIdx] != 0);
 }
 
+- (BOOL)railsBoolForColumn:(NSString*)columnName {
+    return [self railsBoolForColumnIndex:[self columnIndexForName:columnName]];
+}
+
+- (BOOL)railsBoolForColumnIndex:(int)columnIdx {
+    return ([@"t" isEqualToString:[self stringForColumnIndex:columnIdx]]);
+}
+
 - (double)doubleForColumn:(NSString*)columnName {
     return [self doubleForColumnIndex:[self columnIndexForName:columnName]];
 }

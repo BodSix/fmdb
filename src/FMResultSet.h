@@ -55,6 +55,10 @@
 - (BOOL)boolForColumn:(NSString*)columnName;
 - (BOOL)boolForColumnIndex:(int)columnIdx;
 
+// Added by Cory Osborn because the Rails SQLite adapter stores bools as t/f characters rather than 0/1
+- (BOOL)railsBoolForColumn:(NSString*)columnName;
+- (BOOL)railsBoolForColumnIndex:(int)columnIdx;
+
 - (double)doubleForColumn:(NSString*)columnName;
 - (double)doubleForColumnIndex:(int)columnIdx;
 
