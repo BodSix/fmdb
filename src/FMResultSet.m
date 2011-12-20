@@ -279,8 +279,41 @@
     if (sqlite3_column_type(statement.statement, columnIdx) == SQLITE_NULL || (columnIdx < 0)) {
         return nil;
     }
-    
+
     return [NSDate dateWithTimeIntervalSince1970:[self doubleForColumnIndex:columnIdx]];
+}
+
+
+- (NSDate*)railsDateForColumn:(NSString*)columnName {
+    return [self railsDateForColumnIndex:[self columnIndexForName:columnName]];
+}
+
+static NSDateFormatter *railsDateFormatter;
+
+- (NSDate*)railsDateForColumnIndex:(int)columnIdx {
+    
+    if (sqlite3_column_type(statement.statement, columnIdx) == SQLITE_NULL || (columnIdx < 0)) {
+        return nil;
+    }
+
+    // Rails dates are returned as a String in the format yyyy-MM-dd HH:mm:ss.sssss
+    NSString *dtString = [self stringForColumnIndex:columnIdx];
+    NSString *millis = nil;
+    // parse out the milliseconds portion
+    NSRange decRng = [dtString rangeOfString:@"."];
+    if (decRng.location != NSNotFound) {
+        millis = [NSString stringWithFormat:@"0%@", [dtString substringFromIndex:decRng.location]]; // becomes 0.xxxx seconds
+        dtString = [dtString substringToIndex:decRng.location];
+    }
+
+    if (!railsDateFormatter) {
+        railsDateFormatter = [[NSDateFormatter alloc] init];
+        railsDateFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+    }
+    NSDate *dt = [railsDateFormatter dateFromString:dtString];
+    if (millis)
+        dt = [dt dateByAddingTimeInterval:[millis doubleValue]];
+    return dt;
 }
 
 
